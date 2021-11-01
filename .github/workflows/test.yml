@@ -43,7 +43,7 @@ jobs:
       - name: Check for flake8 issues
         run: poetry run flake8
       - name: Check for mypy typing issues
-        run: poetry run mypy
+        run: poetry run mypy genuml/
       - name: Test with pytest
         run: poetry run pytest --cov-report html --cov genuml --verbose
       - name: Get final code coverage percentage
