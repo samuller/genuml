@@ -20,7 +20,7 @@ jobs:
           # Test with specific supported versions
           - name: supported
             os: ubuntu-20.04
-            python: 3.5
+            python: 3.6
           # Test everything with latest versions
           - name: latest
             os: ubuntu-latest
