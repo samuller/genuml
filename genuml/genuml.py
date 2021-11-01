@@ -26,6 +26,8 @@ from typing import Optional, List, Dict
 
 import typer
 
+from . import __version__
+
 app = typer.Typer(
     help="Generate PlantUML class diagram DSL from Java class files.",
     add_completion=False
@@ -411,6 +413,20 @@ def insert(
             if uml is not None:
                 print(uml)
             print()
+
+
+def version_callback(value: bool):
+    if value:
+        typer.echo(f"genuml, version {__version__}")
+        raise typer.Exit()
+
+
+@app.callback()
+def main(
+        version: Optional[bool] = typer.Option(
+        None, "--version", callback=version_callback, is_eager=True
+        )):
+    pass
 
 
 if __name__ == "__main__":
