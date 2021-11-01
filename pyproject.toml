@@ -7,11 +7,11 @@ authors = ["Simon Muller <samullers@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 typer = "~0.4.0"
-mypy = "^0.910"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 flake8 = "^4.0.1"
+mypy = "^0.910"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
