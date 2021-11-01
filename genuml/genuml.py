@@ -240,10 +240,10 @@ def parse_javap_output(output: str, keep_names: List[str] = None):
     # remove semi-colons
     methods_fields = [mf.replace(';', '') for mf in methods_fields]
     # parse lines containing methods or fields into
-    methods_fields: List[Dict] = [parse_method_or_field(mf) for mf in methods_fields]
+    parsed_members: List[Dict] = [parse_method_or_field(mf) for mf in methods_fields]
 
     # remove package paths from types and names
-    for mf in methods_fields:
+    for mf in parsed_members:
         mf['name'] = remove_package_from_type(mf['name'])
         mf['type'] = [remove_package_from_type(mft) for mft in mf['type']]
         if mf['_type'] == 'method':
@@ -251,9 +251,9 @@ def parse_javap_output(output: str, keep_names: List[str] = None):
 
     if keep_names is not None:
         # filter to only keep fields and methods with given names
-        methods_fields = [mf for mf in methods_fields if mf['name'] in keep_names]
+        parsed_members = [mf for mf in parsed_members if mf['name'] in keep_names]
         # check that all given values were valid field/method names
-        mf_names = [mf['name'] for mf in methods_fields]
+        mf_names = [mf['name'] for mf in parsed_members]
         for name in keep_names:
             if name not in mf_names:
                 raise ValueError(f"Unknown method or field: {name}")
@@ -261,13 +261,13 @@ def parse_javap_output(output: str, keep_names: List[str] = None):
     # construct dict with all parsed information
     info = {}
     info['class'] = class_
-    info['methods'] = [mf for mf in methods_fields if mf['_type'] == 'method']
-    info['fields'] = [mf for mf in methods_fields if mf['_type'] == 'field']
+    info['methods'] = [mf for mf in parsed_members if mf['_type'] == 'method']
+    info['fields'] = [mf for mf in parsed_members if mf['_type'] == 'field']
     # pprint(info['class'])
 
     # convert to dict values to strings & strip package paths
     info['class']['name'] = remove_package_from_type(info['class']['name'])
-    for mf in methods_fields:
+    for mf in parsed_members:
         mf['type'] = ' '.join(mf['type'])
         if mf['_type'] == 'method':
             mf['args'] = ', '.join(mf['args'])
@@ -338,7 +338,7 @@ def convert_fqcn_to_path(class_dir, fqcn):
 
 @app.command()
 def generate(
-        class_file: Optional[Path] = typer.Argument(
+        class_file: Path = typer.Argument(
             ...,
             help="Path to compiled Java class file.",
             exists=True,
@@ -350,14 +350,14 @@ def generate(
             help="List of only field/method names that should be shown.",
         )):
     """Generate PlantUML for single given Java class file."""
-    filters = filters.split(' ') if filters is not None else filters
-    uml = generate_uml_from_class(class_file, filters)
+    filter_list = filters.split(' ') if filters is not None else None
+    uml = generate_uml_from_class(class_file, filter_list)
     print(uml)
 
 
 @app.command()
 def insert(
-        plantuml_file: Optional[Path] = typer.Argument(
+        plantuml_file: Path = typer.Argument(
             ...,
             help="Path to file containing only PlantUML.",
             exists=True,
