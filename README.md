@@ -19,7 +19,7 @@ Activate virtual environment:
 
     poetry shell
 
-###  Run tests
+### Run tests
 
     pytest --cov-report html --cov genuml --verbose
 
