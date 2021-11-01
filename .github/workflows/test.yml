@@ -1,0 +1,54 @@
+name: test
+
+on:
+  # Run this workflow every time a new commit or pull request is pushed to repo
+  push:
+  pull_request:
+  # Also run it once weekly to check for impact due to changes in the OS,
+  # python, or any external packages/dependencies
+  schedule:
+  - cron: '41 14 * * fri'
+
+jobs:
+  run-tests:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          # Test with specific supported versions
+          - name: supported
+            os: ubuntu-20.04
+            python: 3.5
+          # Test everything with latest versions
+          - name: latest
+            os: ubuntu-latest
+            python: 3.x
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Install Python ${{ matrix.python }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install poetry
+        shell: bash
+        run: |
+          curl -sL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py \
+            | python -
+      - name: Install dependencies
+        run: poetry install
+      - name: Check for flake8 issues
+        run: poetry run flake8
+      - name: Check for mypy typing issues
+        run: poetry run mypy
+      - name: Test with pytest
+        run: poetry run pytest --cov-report html --cov genuml --verbose
+      - name: Get final code coverage percentage
+        run: poetry run coverage report | grep 'TOTAL' | tr -s ' ' | cut -d ' ' -f 4
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage-report
+          path: htmlcov/
