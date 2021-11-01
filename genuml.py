@@ -7,7 +7,6 @@
 # Explorer, an Eclipse plug-in which is no longer supported.
 #
 # Requirements: Python 3.5+
-# Libs: pip3 install typer==0.4.0
 #
 # Todo:
 # - handle method overloads in pattern filter?
