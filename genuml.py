@@ -75,12 +75,6 @@ def split_args(args):
 #    args = args.split(',')
 #    return args
 
-# tests for split_args
-assert split_args("arg1") == ['arg1']
-assert split_args("arg1, arg2") == ['arg1', 'arg2']
-assert split_args("arg1<A,B>, arg2<C,D>") == ['arg1<A,B>', 'arg2<C,D>']
-assert split_args("arg1<A<B, C,D>,E,F>, arg2<C,D>") == ['arg1<A<B, C,D>,E,F>', 'arg2<C,D>']
-
 
 METHOD_MODIFIERS = [
     'public', 'protected', 'private', 'static',
@@ -117,19 +111,6 @@ def parse_method(signature):
     info['type'] = type_
     info['modifiers'] = modifiers
     return info
-
-
-assert parse_method("public static void main(String[])") == {
-    '_type': 'method', 'name': 'main', 'type': ['void'],
-    'modifiers': ['public', 'static'],
-    'args': ['String[]']
-}
-assert parse_method("public java.lang.String()") == {
-    '_type': 'method',  # constructor
-    'name': 'java.lang.String', 'type': [],
-    'modifiers': ['public'],
-    'args': ['']  # []
-}
 
 
 def parse_field(declaration):
@@ -172,16 +153,9 @@ def remove_package_from_type(type_):
     return type_
 
 
-assert remove_package_from_type("java.lang.String") == "String"
-assert remove_package_from_type("String") == "String"
-
-
 def remove_class_from_package(fqcn):
     package_path = re.sub(r"\.[^ .()<>]+$", "", fqcn)
     return package_path
-
-
-assert remove_class_from_package("java.lang.String") == "java.lang"
 
 
 def parse_class(declaration):
