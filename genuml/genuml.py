@@ -22,7 +22,7 @@ import sys
 import json
 import subprocess
 from pathlib import Path
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple, Any, cast
 
 import typer
 
@@ -34,7 +34,7 @@ app = typer.Typer(
 )
 
 
-def split_indices(string, indices):
+def split_indices(string: str, indices: List[Optional[int]]) -> List[str]:
     # See: https://stackoverflow.com/questions/10851445/splitting-a-string-by-list-of-indices
     parts = [string[i:j] for i, j in zip(indices, indices[1:]+[None])]
     return parts
@@ -42,7 +42,7 @@ def split_indices(string, indices):
 
 # [10,20,30,40,50]
 # [0,10, 11,20, 21,30, 31,40, 41,50]
-def split_indices_exclude(string, splits):
+def split_indices_exclude(string: str, splits: List[int]) -> List[str]:
     """Split string at indices, and also exclude characters at each index."""
     if len(splits) == 0:
         return [string]
@@ -57,7 +57,7 @@ def split_indices_exclude(string, splits):
     return parts
 
 
-def split_args(args):
+def split_args(args: str) -> List[str]:
     """Split argument list of types.
 
     Also has to work for generic types where type names can contain multiple
@@ -71,12 +71,9 @@ def split_args(args):
             depth -= 1
         if char == ',' and depth == 0:
             split_points.append(idx)
-    args = split_indices_exclude(args, split_points)
-    args = [a.strip() for a in args]
-    return args
-#    args = args.replace(' ', '')
-#    args = args.split(',')
-#    return args
+    split_args = split_indices_exclude(args, split_points)
+    split_args = [a.strip() for a in split_args]
+    return split_args
 
 
 METHOD_MODIFIERS = [
@@ -86,56 +83,55 @@ METHOD_MODIFIERS = [
 ]
 
 
-def parse_modifiers_plus_type(modifiers):
+def parse_modifiers_plus_type(modifiers: List[str]) -> Tuple[List[str], List[str]]:
     """Parse modifier keywords that are usually combined with a type."""
     return_type = [mod for mod in modifiers if mod not in METHOD_MODIFIERS]
     modifiers = [mod for mod in modifiers if mod in METHOD_MODIFIERS]
     return modifiers, return_type
 
 
-def parse_method(signature):
+def parse_method(signature: str) -> Dict[str, Any]:
     """Parse method signature."""
     # https://cs.au.dk/~amoeller/RegAut/JavaBNF.html
     # <method header>
     if '(' not in signature:
         # not a method
-        return signature
-    info = {'_type': 'method'}
+        return {}
+    info: Dict[str, Any] = {'_type': 'method'}
     pre_args, args = signature.split('(')
     # check that "throws" etc. doesn't appear after arguments
     assert args[-1] == ')'
     args = args[:-1]
-    args = split_args(args)
-    info['args'] = args
-    pre_args = pre_args.split(' ')
-    info['name'] = pre_args[-1]
-    modifiers = pre_args[:-1]
+    info['args'] = split_args(args)
+    split_pre_args = pre_args.split(' ')
+    info['name'] = split_pre_args[-1]
+    modifiers = split_pre_args[:-1]
     modifiers, type_ = parse_modifiers_plus_type(modifiers)
     info['type'] = type_
     info['modifiers'] = modifiers
     return info
 
 
-def parse_field(declaration):
+def parse_field(declaration: str) -> Dict[str, Any]:
     """Parse method declaration."""
-    info = {'_type': 'field'}
+    info: Dict[str, Any] = {'_type': 'field'}
     # re.split(' ', declaration)
-    declaration = declaration.split(' ')
-    modifiers, type_ = parse_modifiers_plus_type(declaration[:-1])
+    decls = declaration.split(' ')
+    modifiers, type_ = parse_modifiers_plus_type(decls[:-1])
     info['type'] = type_
     info['modifiers'] = modifiers
-    info['name'] = declaration[-1]
+    info['name'] = decls[-1]
     return info
 
 
-def parse_method_or_field(declaration):
+def parse_method_or_field(declaration: str) -> Dict[str, Any]:
     """Parse method or field declarations."""
     if '(' in declaration:
         return parse_method(declaration)
     return parse_field(declaration)
 
 
-def remove_package_from_type(type_):
+def remove_package_from_type(type_: str) -> str:
     """Remove package details from all types, i.e. from FQCN to only class.
 
     Also has to work for generic types where type names can contain multiple
@@ -156,16 +152,16 @@ def remove_package_from_type(type_):
     return type_
 
 
-def remove_class_from_package(fqcn):
+def remove_class_from_package(fqcn: str) -> str:
     package_path = re.sub(r"\.[^ .()<>]+$", "", fqcn)
     return package_path
 
 
-def parse_class(declaration):
+def parse_class(declaration: str) -> Dict[str, Any]:
     """Parse class declaration."""
     assert declaration.endswith(' {')
     declaration = declaration[:-2]
-    info = {'_type': 'class'}
+    info: Dict[str, Any] = {'_type': 'class'}
 
     impl = declaration.split(' implements ')
     info['implements'] = split_args(impl[1]) if len(impl) > 1 else None
@@ -193,7 +189,7 @@ def parse_class(declaration):
     return info
 
 
-def symbol_from_modifiers(modifiers: List[str]):
+def symbol_from_modifiers(modifiers: List[str]) -> str:
     if 'private' in modifiers:
         return '-'
     if 'protected' in modifiers:
@@ -203,16 +199,16 @@ def symbol_from_modifiers(modifiers: List[str]):
     return '~'
 
 
-def pprint(value):
+def pprint(value: str) -> None:
     print(json.dumps(value, sort_keys=True, indent=4))
 
 
-def evalf(fstring, local_vars):
+def evalf(fstring: str, local_vars: Dict[str, Any]) -> str:
     """Eval() for dynamic f-string (that may contain unescaped single quotes)."""
-    return eval('f"{}"'.format(fstring), None, local_vars)
+    return cast(str, eval('f"{}"'.format(fstring), None, local_vars))
 
 
-def parse_javap_output(output: str, keep_names: List[str] = None):
+def parse_javap_output(output: str, keep_names: Optional[List[str]] = None) -> str:
     """Parse output of javap and convert to PlantUML diagram code.
 
     Parameters
@@ -242,7 +238,7 @@ def parse_javap_output(output: str, keep_names: List[str] = None):
     # remove semi-colons
     methods_fields = [mf.replace(';', '') for mf in methods_fields]
     # parse lines containing methods or fields into
-    parsed_members: List[Dict] = [parse_method_or_field(mf) for mf in methods_fields]
+    parsed_members: List[Dict[str, Any]] = [parse_method_or_field(mf) for mf in methods_fields]
 
     # remove package paths from types and names
     for mf in parsed_members:
@@ -261,7 +257,7 @@ def parse_javap_output(output: str, keep_names: List[str] = None):
                 raise ValueError(f"Unknown method or field: {name}")
 
     # construct dict with all parsed information
-    info = {}
+    info: Dict[str, Any] = {}
     info['class'] = class_
     info['methods'] = [mf for mf in parsed_members if mf['_type'] == 'method']
     info['fields'] = [mf for mf in parsed_members if mf['_type'] == 'field']
@@ -305,8 +301,8 @@ def parse_javap_output(output: str, keep_names: List[str] = None):
 
 def generate_uml_from_class(
         class_file: Path,
-        filters: List[str] = None
-        ):
+        filters: Optional[List[str]] = None
+        ) -> Optional[str]:
     """Helper function to generate PlantUML for single given Java class file."""
     res = subprocess.run(["javap", "-private", class_file], stdout=subprocess.PIPE)
     if res.returncode == 0:
@@ -318,7 +314,7 @@ def generate_uml_from_class(
     return None
 
 
-def parse_pattern(pattern):
+def parse_pattern(pattern: str) -> Tuple[str, Optional[List[str]]]:
     """Parse pattern string into FQCN and filters."""
     parts = pattern.split(":")
     fqcn = parts[0]
@@ -330,12 +326,11 @@ def parse_pattern(pattern):
     return fqcn, filters
 
 
-def convert_fqcn_to_path(class_dir, fqcn):
+def convert_fqcn_to_path(class_dir: Path, fqcn: str) -> Path:
     """Convert fully qualified class name to a path to class file."""
     pattern_file = fqcn.replace(".", os.path.sep)
     pattern_file += ".class"
-    pattern_file = class_dir / pattern_file
-    return pattern_file
+    return class_dir / pattern_file
 
 
 @app.command()
@@ -350,7 +345,7 @@ def generate(
         filters: str = typer.Argument(
             None,
             help="List of only field/method names that should be shown.",
-        )):
+        )) -> None:
     """Generate PlantUML for single given Java class file."""
     filter_list = filters.split(' ') if filters is not None else None
     uml = generate_uml_from_class(class_file, filter_list)
@@ -366,7 +361,7 @@ def insert(
             file_okay=True,
             dir_okay=False
         ),
-        class_dir: Optional[Path] = typer.Option(
+        class_dir: Path = typer.Option(
             "classes",
             help="Directory containing class files.",
             exists=True,
@@ -376,7 +371,7 @@ def insert(
         pattern_marker: str = typer.Option(
             "[JAVA] ",
             help="Marker string used to indicate the following string is a pattern to process."
-        )):
+        )) -> None:
     """Insert diagrams into PlantUML containing pattern comments.
 
     "Patterns" are strings describing the class diagram to generate. They consist of
@@ -415,7 +410,7 @@ def insert(
             print()
 
 
-def version_callback(value: bool):
+def version_callback(value: bool) -> None:
     if value:
         typer.echo(f"genuml, version {__version__}")
         raise typer.Exit()
@@ -425,7 +420,7 @@ def version_callback(value: bool):
 def main(
         version: Optional[bool] = typer.Option(
         None, "--version", callback=version_callback, is_eager=True
-        )):
+        )) -> None:
     pass
 
 
