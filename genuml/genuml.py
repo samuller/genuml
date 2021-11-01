@@ -234,9 +234,9 @@ def parse_javap_output(output: str, keep_names: List[str] = None):
 
     methods_fields = lines[1:-1]
     # remove inner class functions (any line containing a $)
-    methods_fields = [mf for mf in methods_fields if not '$' in mf]
+    methods_fields = [mf for mf in methods_fields if '$' not in mf]
     # remove "static {}" that appears in enums from javap
-    methods_fields = [mf for mf in methods_fields if not '{}' in mf]
+    methods_fields = [mf for mf in methods_fields if '{}' not in mf]
     # remove semi-colons
     methods_fields = [mf.replace(';', '') for mf in methods_fields]
     # parse lines containing methods or fields into
@@ -263,7 +263,7 @@ def parse_javap_output(output: str, keep_names: List[str] = None):
     info['class'] = class_
     info['methods'] = [mf for mf in methods_fields if mf['_type'] == 'method']
     info['fields'] = [mf for mf in methods_fields if mf['_type'] == 'field']
-    #pprint(info['class'])
+    # pprint(info['class'])
 
     # convert to dict values to strings & strip package paths
     info['class']['name'] = remove_package_from_type(info['class']['name'])
@@ -304,7 +304,7 @@ def parse_javap_output(output: str, keep_names: List[str] = None):
 def generate_uml_from_class(
         class_file: Path,
         filters: List[str] = None
-    ):
+        ):
     """Helper function to generate PlantUML for single given Java class file."""
     res = subprocess.run(["javap", "-private", class_file], stdout=subprocess.PIPE)
     if res.returncode == 0:
@@ -348,8 +348,7 @@ def generate(
         filters: str = typer.Argument(
             None,
             help="List of only field/method names that should be shown.",
-        ),
-    ):
+        )):
     """Generate PlantUML for single given Java class file."""
     filters = filters.split(' ') if filters is not None else filters
     uml = generate_uml_from_class(class_file, filters)
@@ -375,8 +374,7 @@ def insert(
         pattern_marker: str = typer.Option(
             "[JAVA] ",
             help="Marker string used to indicate the following string is a pattern to process."
-        )
-    ):
+        )):
     """Insert diagrams into PlantUML containing pattern comments.
 
     "Patterns" are strings describing the class diagram to generate. They consist of

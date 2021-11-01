@@ -1,4 +1,4 @@
-from genuml.genuml import *
+from genuml.genuml import split_args, parse_method, remove_package_from_type, remove_class_from_package
 
 
 def test_split_args():
