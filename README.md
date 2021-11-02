@@ -1,6 +1,7 @@
 # GenUML - Generate PlantUML from Java class files
 
 [![Build Status](https://github.com/samuller/genuml/workflows/test/badge.svg)](https://github.com/samuller/genuml/actions)
+[![PyPI Version](https://badge.fury.io/py/genuml.svg)](https://badge.fury.io/py/genuml)
 
 This tool aids in creating [PlantUML](https://plantuml.com/) class diagrams by generating UML diagrams from Java class files. Diagrams can be generated from single class files, or generated diagrams can be inserted into PlantUML code based on comments containing the correct "pattern".
 
@@ -54,12 +55,28 @@ which could then be used to generate this diagram:
 
 ![PlantUML class diagram](tests/data/diagram.png)
 
-## Install from Github
+## Installation
+
+### Install from PyPI
+
+With `Python 3` installed on your system, you can run:
+
+    pip install genuml
+
+To test that installation worked, run:
+
+    genuml --help
+
+and you can uninstall at any time with:
+
+    pip uninstall genuml
+
+### Install from Github
 
 To install the newest code directly from Github:
 
     pip install git+https://github.com/samuller/genuml
 
-And uninstall with:
+And uninstall remains the same:
 
     pip uninstall genuml
