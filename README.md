@@ -21,6 +21,38 @@ Commands:
 
 Some functionality, as well as the generated diagram style, are based on [ObjectAid UML Explorer](https://marketplace.eclipse.org/content/objectaid-uml-explorer), an Eclipse plug-in which seems to no longer be supported.
 
+## Example usage
+
+    genuml insert --class-dir "WEB-INF/classes" plantuml-diagram.txt | java -jar plantuml.jar -pipe > diagram.png
+
+Some explanation:
+
+- Compiled classes are found in `WEB-INF/classes`.
+- `plantuml-diagram.txt` contains PlantUML code as well as "pattern" comments referencing specific classes contained in the given folders (see [example](tests/data/diagram.txt)).
+  - This file will be processed with the generated diagrams being placed directly after their pattern comments. Transformed output will be printed to stdout (and in this example, piped directly to PlantUML).
+- `plantuml.jar` has been downloaded to the local folder.
+
+### Example PlantUML with pattern comments
+
+```
+@startuml
+skinparam linetype polyline
+
+'[JAVA] tests.data.ExampleClass
+'[JAVA] tests.data.ExampleAbstract
+'[JAVA] tests.data.ExampleInterface
+'[JAVA] tests.data.ExampleEnum: LOW HIGH
+
+ExampleInterface *-- ExampleClass : implements
+ExampleClass .> "0..1" ExampleEnum
+ExampleClass -> ExampleAbstract
+
+@enduml
+```
+which could then be used to generate this diagram:
+
+![PlantUML class diagram](tests/data/diagram.png)
+
 ## Install from Github
 
 To install the newest code directly from Github:
@@ -30,4 +62,3 @@ To install the newest code directly from Github:
 And uninstall with:
 
     pip uninstall genuml
-
