@@ -15,7 +15,6 @@
 # - stdlib or 3rd-party lib classes?
 #
 
-
 import os
 import re
 import sys
@@ -349,7 +348,8 @@ def generate(
     """Generate PlantUML for single given Java class file."""
     filter_list = filters.split(' ') if filters is not None else None
     uml = generate_uml_from_class(class_file, filter_list)
-    print(uml)
+    if uml is not None:
+        print(uml)
 
 
 @app.command()
