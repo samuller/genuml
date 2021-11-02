@@ -3,6 +3,19 @@ name = "genuml"
 version = "0.5.0"
 description = ""
 authors = ["Simon Muller <samullers@gmail.com>"]
+readme = "README.md"
+homepage = "https://github.com/samuller/genuml"
+repository = "https://github.com/samuller/genuml"
+keywords = ["plantuml", "uml", "java"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Multimedia :: Graphics :: Editors",
+]
+
 
 [tool.poetry.scripts]
 genuml = "genuml.genuml:app"
