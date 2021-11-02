@@ -38,6 +38,7 @@ Some explanation:
 @startuml
 skinparam linetype polyline
 
+' Pattern comments that will be processed by GenUML:
 '[JAVA] tests.data.ExampleClass
 '[JAVA] tests.data.ExampleAbstract
 '[JAVA] tests.data.ExampleInterface
