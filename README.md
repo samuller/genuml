@@ -20,3 +20,14 @@ Commands:
 ```
 
 Some functionality, as well as the generated diagram style, are based on [ObjectAid UML Explorer](https://marketplace.eclipse.org/content/objectaid-uml-explorer), an Eclipse plug-in which seems to no longer be supported.
+
+## Install from Github
+
+To install the newest code directly from Github:
+
+    pip install git+https://github.com/samuller/genuml
+
+And uninstall with:
+
+    pip uninstall genuml
+
