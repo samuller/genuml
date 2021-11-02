@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "genuml"
 version = "0.5.1"
-description = ""
+description = "Generate PlantUML diagram code from Java class files"
 authors = ["Simon Muller <samullers@gmail.com>"]
 readme = "README.md"
 homepage = "https://github.com/samuller/genuml"
