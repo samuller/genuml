@@ -6,7 +6,7 @@
 # UML diagrams. Based on the style and functionality of ObjectAid UML
 # Explorer, an Eclipse plug-in which is no longer supported.
 #
-# Requirements: Python 3.5+
+# Requirements: python javap graphviz
 #
 # Todo:
 # - handle method overloads in pattern filter?
