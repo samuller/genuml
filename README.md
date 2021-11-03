@@ -6,7 +6,7 @@
 
 This tool aids in creating [PlantUML](https://plantuml.com/) class diagrams by generating UML diagrams from Java class files. Diagrams can be generated from single class files, or generated diagrams can be inserted into PlantUML code based on comments containing the correct "pattern".
 
-```
+```console
 $ genuml --help
 Usage: genuml [OPTIONS] COMMAND [ARGS]...
 
@@ -25,8 +25,10 @@ Some functionality, as well as the generated diagram style, are based on [Object
 
 ## Example usage
 
+```console
     genuml insert --class-dir "WEB-INF/classes" plantuml-diagram.txt \
         | java -jar plantuml.jar -pipe > diagram.png
+```
 
 Some explanation:
 
@@ -37,7 +39,7 @@ Some explanation:
 
 ### Example PlantUML with pattern comments
 
-```
+```plantuml
 @startuml
 skinparam linetype polyline
 
@@ -53,6 +55,7 @@ ExampleClass -> ExampleAbstract
 
 @enduml
 ```
+
 which could then be used to generate this diagram:
 
 ![PlantUML class diagram](tests/data/diagram.png)
@@ -63,22 +66,32 @@ which could then be used to generate this diagram:
 
 With `Python 3` installed on your system, you can run:
 
-    pip install genuml
+```console
+pip install genuml
+```
 
 To test that installation worked, run:
 
-    genuml --help
+```console
+genuml --help
+```
 
 and you can uninstall at any time with:
 
-    pip uninstall genuml
+```console
+pip uninstall genuml
+```
 
 ### Install from Github
 
 To install the newest code directly from Github:
 
-    pip install git+https://github.com/samuller/genuml
+```console
+pip install git+https://github.com/samuller/genuml
+```
 
 And uninstall remains the same:
 
-    pip uninstall genuml
+```console
+pip uninstall genuml
+```
