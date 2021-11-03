@@ -47,7 +47,21 @@ jobs:
       - name: Test with pytest
         run: poetry run pytest --cov-report html --cov genuml --verbose
       - name: Get final code coverage percentage
-        run: poetry run coverage report | grep 'TOTAL' | tr -s ' ' | cut -d ' ' -f 4
+        run: |
+          poetry run coverage report | grep 'TOTAL' | tr -s ' ' | cut -d ' ' -f 4
+          COV_TOTAL=$(poetry run coverage report | grep 'TOTAL' | tr -s ' ' | cut -d ' ' -f 4 | tr -d '%')
+          echo "COV_TOTAL=$COV_TOTAL" >> $GITHUB_ENV
+      - name: Create code coverage badge
+        # Ensure we only update once per build
+        if: matrix.name == 'supported'
+        uses: schneegans/dynamic-badges-action@v1.1.0
+        with:
+          auth: ${{ secrets.GIST_TOKEN }}
+          gistID: c2a6dcd467afe62785c828a40acc96d8
+          filename: genuml-badge-coverage.json
+          label: coverage
+          message: "${{ env.COV_TOTAL }}%"
+          color: "brightgreen"
       - name: Archive code coverage results
         uses: actions/upload-artifact@v2
         with:
