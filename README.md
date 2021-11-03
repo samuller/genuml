@@ -26,8 +26,8 @@ Some functionality, as well as the generated diagram style, are based on [Object
 ## Example usage
 
 ```console
-    genuml insert --class-dir "WEB-INF/classes" plantuml-diagram.puml \
-        | java -jar plantuml.jar -pipe > diagram.png
+genuml insert --class-dir "WEB-INF/classes" plantuml-diagram.puml \
+    | java -jar plantuml.jar -pipe > diagram.png
 ```
 
 Some explanation:
