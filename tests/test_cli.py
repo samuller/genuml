@@ -57,7 +57,7 @@ def test_generate_enum() -> None:
 
 
 def test_insert() -> None:
-    diagram_path = "tests/data/diagram.txt"
+    diagram_path = "tests/data/diagram.puml"
     result = runner.invoke(app, ["insert", "--class-dir", ".", diagram_path])
     assert result.exit_code == 0
     assert EXAMPLE_CLASS_HEADER in result.stdout

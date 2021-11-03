@@ -26,14 +26,14 @@ Some functionality, as well as the generated diagram style, are based on [Object
 ## Example usage
 
 ```console
-    genuml insert --class-dir "WEB-INF/classes" plantuml-diagram.txt \
+    genuml insert --class-dir "WEB-INF/classes" plantuml-diagram.puml \
         | java -jar plantuml.jar -pipe > diagram.png
 ```
 
 Some explanation:
 
 - Compiled classes are found in `WEB-INF/classes`.
-- `plantuml-diagram.txt` contains PlantUML code as well as "pattern" comments referencing specific classes contained in the given folders (see [example](tests/data/diagram.txt)).
+- `plantuml-diagram.puml` contains PlantUML code as well as "pattern" comments referencing specific classes contained in the given folders (see [example](tests/data/diagram.puml)).
   - This file will be processed with the generated diagrams being placed directly after their pattern comments. Transformed output will be printed to stdout (and in this example, piped directly to PlantUML).
 - `plantuml.jar` has been downloaded to the local folder.
 
