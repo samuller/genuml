@@ -369,7 +369,7 @@ def insert(
             dir_okay=True
         ),
         pattern_marker: str = typer.Option(
-            "[JAVA] ",
+            "!gen_java ",
             help="Marker string used to indicate the following string is a pattern to process."
         )) -> None:
     """Insert diagrams into PlantUML containing pattern comments.
@@ -384,10 +384,10 @@ def insert(
     that the rest of the line should be processed as a pattern string.
 
     \b
-    The default format is: '[JAVA] FQCN[: [FILTERS...]]
+    The default format is: '!gen_java FQCN[: [FILTERS...]]
     Full example of line in PlantUML:
 
-    '[JAVA] java.util.lang.String: length replaceAll toUpperCase
+    '!gen_java java.util.lang.String: length replaceAll toUpperCase
     """
     with open(plantuml_file) as file:
         lines = file.readlines()

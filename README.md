@@ -44,10 +44,10 @@ Some explanation:
 skinparam linetype polyline
 
 ' Pattern comments that will be processed by GenUML:
-'[JAVA] tests.data.ExampleClass
-'[JAVA] tests.data.ExampleAbstract
-'[JAVA] tests.data.ExampleInterface
-'[JAVA] tests.data.ExampleEnum: LOW HIGH
+'!gen_java tests.data.ExampleClass
+'!gen_java tests.data.ExampleAbstract
+'!gen_java tests.data.ExampleInterface
+'!gen_java tests.data.ExampleEnum: LOW HIGH
 
 ExampleInterface *-- ExampleClass : implements
 ExampleClass .> "0..1" ExampleEnum
