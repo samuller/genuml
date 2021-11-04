@@ -1,7 +1,7 @@
 # GenUML - Generate PlantUML from Java class files
 
-[![Build Status](https://github.com/samuller/genuml/workflows/test/badge.svg)](https://github.com/samuller/genuml/actions)
 [![PyPI Version](https://badge.fury.io/py/genuml.svg)](https://badge.fury.io/py/genuml)
+[![Build Status](https://github.com/samuller/genuml/workflows/test/badge.svg)](https://github.com/samuller/genuml/actions)
 [![Code Coverage](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/samuller/c2a6dcd467afe62785c828a40acc96d8/raw/genuml-badge-coverage.json)](https://github.com/samuller/genuml/actions)
 
 This tool aids in creating [PlantUML](https://plantuml.com/) class diagrams by generating UML diagrams from Java class files. Diagrams can be generated from single class files, or generated diagrams can be inserted into PlantUML code based on comments containing the correct "pattern".
