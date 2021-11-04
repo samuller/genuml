@@ -1,3 +1,4 @@
+"""Test of app when used through CLI interface."""
 from typer.testing import CliRunner
 
 from genuml.genuml import app
@@ -51,12 +52,14 @@ def assert_strip(str1: str, str2: str) -> None:
 
 
 def test_generate_enum() -> None:
+    """Test generation of an Enum."""
     result = runner.invoke(app, ["generate", "tests/data/ExampleEnum.class"])
     assert result.exit_code == 0
     assert_strip(result.stdout, EXAMPLE_ENUM_PLANTUML)
 
 
 def test_insert() -> None:
+    """Test 'insert' command."""
     diagram_path = "tests/data/diagram.puml"
     result = runner.invoke(app, ["insert", "--class-dir", ".", diagram_path])
     assert result.exit_code == 0

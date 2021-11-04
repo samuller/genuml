@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-#
-# GenUML
-#
-# Tool to aid in using PlantUML to create class diagrams by generating
-# UML diagrams. Based on the style and functionality of ObjectAid UML
-# Explorer, an Eclipse plug-in which is no longer supported.
-#
-# Requirements: python javap graphviz
-#
-# Todo:
-# - handle method overloads in pattern filter?
-# - use proper EBNF parsing?
-# - internal classes?
-# - stdlib or 3rd-party lib classes?
-#
+"""
+GenUML - Generate PlantUML from Java class files.
+
+Tool to aid in using PlantUML to create class diagrams by generating
+UML diagrams. Based on the style and functionality of ObjectAid UML
+Explorer, an Eclipse plug-in which is no longer supported.
+
+Requirements: python javap graphviz
+
+Todo:
+- handle method overloads in pattern filter?
+- use proper EBNF parsing?
+- internal classes?
+- stdlib or 3rd-party lib classes?
+"""
 
 import os
 import re
@@ -31,12 +31,6 @@ app = typer.Typer(
     help="Generate PlantUML class diagram DSL from Java class files.",
     add_completion=False
 )
-
-
-def split_indices(string: str, indices: List[Optional[int]]) -> List[str]:
-    # See: https://stackoverflow.com/questions/10851445/splitting-a-string-by-list-of-indices
-    parts = [string[i:j] for i, j in zip(indices, indices[1:]+[None])]
-    return parts
 
 
 # [10,20,30,40,50]
@@ -60,7 +54,8 @@ def split_args(args: str) -> List[str]:
     """Split argument list of types.
 
     Also has to work for generic types where type names can contain multiple
-    type names recursively."""
+    type names recursively.
+    """
     depth = 0
     split_points = []
     for idx, char in enumerate(args):
@@ -152,6 +147,7 @@ def remove_package_from_type(type_: str) -> str:
 
 
 def remove_class_from_package(fqcn: str) -> str:
+    """Remove class name, keeping only package, from fully qualified class name."""
     package_path = re.sub(r"\.[^ .()<>]+$", "", fqcn)
     return package_path
 
@@ -189,6 +185,7 @@ def parse_class(declaration: str) -> Dict[str, Any]:
 
 
 def symbol_from_modifiers(modifiers: List[str]) -> str:
+    """Get the appropriate PlantUML visibility symbol based on modifier keywords."""
     if 'private' in modifiers:
         return '-'
     if 'protected' in modifiers:
@@ -199,6 +196,7 @@ def symbol_from_modifiers(modifiers: List[str]) -> str:
 
 
 def pprint(value: str) -> None:
+    """Pretty print some JSON (for debugging)."""
     print(json.dumps(value, sort_keys=True, indent=4))
 
 
@@ -298,11 +296,11 @@ def parse_javap_output(output: str, keep_names: Optional[List[str]] = None) -> s
     )
 
 
-def generate_uml_from_class(
+def generate_uml_from_class_javap(
         class_file: Path,
         filters: Optional[List[str]] = None
         ) -> Optional[str]:
-    """Helper function to generate PlantUML for single given Java class file."""
+    """Generate PlantUML for single given Java class file by using javap output."""
     res = subprocess.run(["javap", "-private", class_file], stdout=subprocess.PIPE)
     if res.returncode == 0:
         try:
@@ -347,7 +345,7 @@ def generate(
         )) -> None:
     """Generate PlantUML for single given Java class file."""
     filter_list = filters.split(' ') if filters is not None else None
-    uml = generate_uml_from_class(class_file, filter_list)
+    uml = generate_uml_from_class_javap(class_file, filter_list)
     if uml is not None:
         print(uml)
 
@@ -388,7 +386,7 @@ def insert(
     Full example of line in PlantUML:
 
     '!gen_java java.util.lang.String: length replaceAll toUpperCase
-    """
+    """  # noqa: D301
     with open(plantuml_file) as file:
         lines = file.readlines()
         lines = [line.strip() for line in lines]
@@ -403,7 +401,7 @@ def insert(
             # parse pattern and generate diagram code
             fqcn, filters = parse_pattern(pattern)
             class_file = convert_fqcn_to_path(class_dir, fqcn)
-            uml = generate_uml_from_class(class_file, filters)
+            uml = generate_uml_from_class_javap(class_file, filters)
             # output generated pattern
             if uml is not None:
                 print(uml)
@@ -411,6 +409,7 @@ def insert(
 
 
 def version_callback(value: bool) -> None:
+    """Print out application's version info."""
     if value:
         typer.echo(f"genuml, version {__version__}")
         raise typer.Exit()
@@ -421,6 +420,7 @@ def main(
         version: Optional[bool] = typer.Option(
         None, "--version", callback=version_callback, is_eager=True
         )) -> None:
+    """Use to add arguments related to whole app and not only specific sub-commands."""
     pass
 
 
