@@ -23,7 +23,7 @@ jobs:
             python: 3.8
           # Test everything with latest versions
           - name: latest
-            os: ubuntu-latest
+            os: latest
             python: 3.x
 
     steps:
